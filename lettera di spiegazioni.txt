@@ -1,0 +1,290 @@
+Ciao!
+Sono Diego, grazie mille per i complimenti per il mio tetris! scusa per il
+ritardo, ma non apro la posta da un po' di giorni. Allora, vediamo che si può
+fare per darti qualche dritta sul costruire un'applicazione grafica in java.
+
+Per il materiale informativo che mi hai chiesto ti dico che ci sono un sacco
+di manuali in internet che puoi cercare su google che spiegano più o meno
+chiaramente java. Se però vuoi fare qualcosa di grafica, tipo un gioco,
+allora guarda assolutamente "java by example" di Johannes Wallroth (ho perso
+il sito ma lo puoi facilmente trovare) che, a patto tu abbia una minima
+preparazione in java, spiega molto bene la grafica e i thread e tutto quello
+che ti serve. E' in inglese, spero non sia un problema perchè tutti i
+manuali che esistono sono in inglese e quelli in italiano sono brutti... e
+poi è più figo leggere un manuale in inglese no? :-) apparte scherzi
+veramente sapere l'inglese è tutto, non serve saperlo parlare (io sono stato
+2 volte 1 mese a Dublino e 15gg a Londra e ancora non lo so parlare molto
+bene!), basta che lo sai leggere abbastanza bene. Questo perchè anche la
+documentazione Java è in inglese. Perchè tu HAI scaricato la documentazione
+di java 1.4 VERO? se non lo hai fatto fallo assolutamente, è fondamentale!!!
+tu puoi scaricarti anche mille esempi di tetris o tutto quello che vuoi e
+poi ricevere anche mille spiegazioni per email ma ci sarà sempre qualche
+metodo o qualche classe nell'esempio che non conosci, nella documentazione
+c'è scritta la descrizione di qualsiasi metodo o classe che c'è in java.
+Così se vuoi fare qualcosa di nuovo alla fine se hai un po' di dimestichezza
+non c'è bisogno nemmeno di manuali che sono anche troppo dispersivi, basta
+una ricerca veloce sulla documentazione et voila, trovi propio quello che ti
+serve. E' sul sito della Sun. Inoltre io nelle nuove versioni del gioco ho
+tradotto tutti i commenti in inglese e così per aiutarti mi baso su quelle,
+spero non sia un problema per te. Qui di seguito poi allego la nuova
+versione (adesso ho inserito anche un altro gioco insieme agli altri, snake,
+simile a quello sui cellulari nokia). Spero anche che tu usi un ambiente di
+svluppo e non bloccoNote per fare i tuoi programmi, questo migliora
+enormente la velocità nello scrivere codice, grazie ai colori della
+sintassi, gli aiuti nel completamento automatico, l'help in linea, il debug
+e chi più ne ha più ne metta. L'ambiente di sviluppo che ho usato io per
+tetris (che ormai non è più tetris, ma brickGame perchè c'è anche snake che
+non è un tetrisLike) è JCreator della Xinox Software, è molto carino e
+semplice soprattutto la versione pro, rigorosamente crakkata (! sono solo un
+povero studente che vuole imparare! niente soldi... solo spero che quando
+avrò una società mia di software non facciano lo stesso con me :-> ) che è
+anche abbastanza leggera da scaricare dal sito della Xinox.
+
+Spero vivamente tu sappia programmare ad oggetti. Io mi ero abituato con il
+c all'inizio che era strutturato e per passare agli oggetti ci ho messo un
+po'. Te se sei alle prime armi impara subito a programmare ad oggetti. A
+proposito, vai a scuola te? all'università? dove? io voglio fare robotica!!!
+
+Cmq riprendendo il discoroso nel mio tetris ho usato diverse classi, e
+alcune che sono ereditate da altre, con metodi con overriding, adesso ti
+spiego a grandi linee la struttura.
+
+La classe Base è come dice il nome stesso la base del programma, è l'applet
+e fornisce alcuni metodi di uso generale. Ha implementato le interfacce
+ActionListener per gestire gli eventi tipo la pressione dei bottoni
+dell'interfaccia grafica e Runnable per permettere l'utilizzo dei thread.
+Il programma all'inizio inizializza molta roba tipo le immagini e i colori
+del gioco e altro.
+Nell'applet ci sono diversi tasti come hai visto, quando premi START viene
+avviato un thread cioè un processo. In questo modo si ha a disposizione il
+metodo run() che è un metodo che viene richiamato quando il thread è
+attivato. Dentro il metodo run() c'è un ciclo che ha la condizione:
+while (thread == Thread.currentThread()) { fai_scendere_il_pezzo();
+aspetta_qualche_istante(); }
+In pratica è un ciclo che si ripete al'inifinito (perchè esiste un solo
+thread nel gioco e la condizione è sempre rispettata ammeno che il thread
+non sia null) che fa scendere i pezzi del nostro tetris e poi aspetta per un
+numero di millisecondi che dipende dalla velocità del gioco. Quando facciamo
+pausa o perdiamo allora il thread viene annullato e non è più uguale al
+Thread.currentThread(), così il ciclo finisce e tutto si ferma.
+Insomma il gioco è un ciclo di azioni che si ripete all'infinito. Allora tu
+potresti dire: "A che serve allora usare i thread? non è uguale fare un
+ciclo all'avvio dell'applet magari nel metodo init() o nel costruttore della
+classe Base?" La risposta è no, non è uguale perchè in questo modo il ciclo
+"succhia" tutto il processore per fare le azioni dentro il ciclo infinito e
+non ha mai tempo per gestire routine come la gestione della tastiera e il
+mouse, insomma, un ciclo infinito usato fuori da un thread separato
+permetterebbe sì di far scendere i pezzi del nostro tetris ma non di premere
+i bottoni dell'interfaccia grafica o di usare le frecce direzionali della
+tastiera per spostare i nostri pezzi. (per maggiori informazioni guarda la
+documentazione). Questo è quanto sui thread. Non serve che tu conosca
+complessi algoritmi di Dijkstra per la programmazione concorrente perchè
+viene usato solo un processo in questo gioco (e in tutti i giochi simili a
+questo).
+
+Un problema che potresti porti è: "Come faccio a tenere conto dei pezzi che
+sono presenti nel campo di gioco?" Per questo si usano le matrici. In realtà
+il campo di gioco del tetris è simbolizzato con una matrice 20x10. Il valore
+degli elementi della matrice indica che cosa c'è in esso: nel mio caso se il
+valore dell'elemento è 0 allora in quel punto dell'area di gioco non c'è
+niente, se è un numero da 1 a 6 allora lì c'è un quadratino colorato (1=
+verde, 2= rosso e così via)  che non fa parte del pezzo che sta scendendo in
+quel momento e se è un numero da 101 a 106 allora è un quadratino colorato
+che fa parte del pezzo che sta scendendo. Differenziando i valori dei
+quadratini che fanno parte del pezzo che sta scendendo e i quadratini che
+ormai sono inattivi nel fondo dell'area di gioco posso distinguere quali
+quadratini devo muovere ogni volta che scende il pezzo o che si muove a
+destra o a sinistra o viene ruotato in risposta ai comandi del giocatore.
+In questo modo inoltre la parte delle regole del gioco del tetris è
+completamente separato dalla parte grafica perchè la parte grafica va a
+guardare la matrice e disegna di conseguenza, non devo andare a disegnare
+quadratini manualmente ogni volta che ad esempio ruoto il pezzo.
+
+La classe Table (Disegno nella versione italiana) è la classe che gestisce
+la grafica dell'area di gioco. In realtà c'è anche un'altra classe chiamata
+Preview (Anteprima) per l'anteprima dei pezzi che vengono dopo ma che è
+molto simile alla Table.
+Essa è ereditata dalla classe Canvas fornita da java che è la classe per
+disegnare nell'interfaccia grafica. Quindi la classe Table è una canvas essa
+stessa (come d'altra parte Base è un'applet essa stessa). Nella classe c'è
+un metodo chiamato paint(Graphics g) che viene richiamato ogni qualvolta che
+c'è bisogno di disegnare la canvas, ad esempio la canvas viene coperta da
+un'altra finestra e poi chiudiamo questa finestra, in questo momento il
+programma automaticamente richiamerà il metodo paint che contiene tutte le
+istruzioni che abbiamo messo noi da eseguire per ridisegnare la canvas. Il
+parametro g è il contesto grafico della canvas, cioè è il disegno che c'è
+nella canvas (ad es. qualche pezzo di gioco del tetris). Quando si richiama
+il metodo paint(Graphics g) il disegno in g viene cancellato e viene
+sostituito con quello che viene costruito con le istruzioni che abbiamo
+messo noi.
+C'è anche un altro metodo chiamato update(Graphics g) che invece di
+cancellare e poi disegnare la canvas non cancella il disegno in g ma lo
+disegna sopra a quello precedente. Ad esempio se c'è un quadratino in fondo
+all'area di disegno e noi disegnamo successivamente un quadratino all'inizio
+dell'area di gioco, con update il quadratino disegnato precedentemente sarà
+ancora lì, facendo paint invece il vecchio quadratino verrà cancellato. Per
+richiamare il metodo update(Graphics g) manualmente però non dobbiamo usare
+direttamente il metodo update(Graphics g) ma usare il metodo repaint().
+Per disegnare la canvas allora abbiamo capito che bisogna mettere istruzioni
+dentro il metodo paint(Graphics g). Che tipo di istruzioni? java fornisce
+dei metodi per disegnare sul contesto grafico della canvas tipo fillRect per
+disegnare rettangoli, drawLine per disegnare linee e così via, puoi
+guardarteli sulla documentazione. Il parametro g di tipo Graphics del metodo
+paint(Graphics g) rappresenta l'area della canvas su cui si può disegnare,
+così facendo g.fillRect(0,0,10,10) ad esempio si può disegnare in rettangolo
+vuoto con il vertice in alto a sinistra sulla coordinata 0,0 della canvas di
+lati 10. Ricorda che la canvas è rappresentata come un piano cartesiano con
+la coordinata x che si incremeta da sinistra a destra e la coordinata y che
+si incrementa dall'alto in basso, con una convenzione diversa quindi da
+quella usata in matematica (dove la y si incrementa dal basso in alto).
+Nel cicolo infinito di cui ho parato sopra allora ci deve essere una chiamta
+al metodo repaint() per aggiornare sempre la grafica del gioco.
+Perchè repaint() e non paint(Graphics g)? Perchè se chiamiamo sempre
+paint(Graphics g) la grafica verrà sempre cancellata e poi ridisegnata ogni
+pochi millisecondi e in questo caso provocherà un fastidioso effetto
+chiamato sfarfallio, vedrai insomma che la grafica lampeggierà tutta e darà
+molto fastidio, questo perchè ogni volta che viene cancellata la grafica il
+programma va direttamente a cambiare il buffer della memoria grafica, cioè
+la parte di memoria RAM usata dal sistema operativo dove ci sono memorizzati
+i colori per ogni pixel, e questo si riperquoterà sullo schermo: nello
+schermo verrà prima visualizzato il colore dello sfondo e poi subito dopo i
+pezzi colorati del gioco e poi di nuovo lo sfondo... provocando uno
+sfarfallio.
+Così si usa repaint() che non fa questo difetto andando a scrivere sopra il
+disegno precedente senza cancellarlo. Counque a noi di cancellare il disegno
+precedente non ci importa, infatti noi comunque andremo a ridisegnare tutta
+l'area di gioco sovrapponendo quindi il vecchio disegno. Per ridisegnare
+tutta l'area di gioco andiamo a prelevare la matrice che rappresenta
+simbolicamente il campo di gioco del tetris, facciamo un controllo su ogni
+elemento della matrice e andiamo a disegnare un quadratino del colore
+corrispondente nelle coordinate giuste dell'area di gioco.
+Questo per una grafica elementare però! se vuoi una grafica con sfondo con
+immagini, quadratini particolari e così via, la cosa si complica un po'.
+Innanzitutto ti servono conoscenze per l'estrazione e la gestione delle
+immagini e la tecnica del duble buffering.
+Iniziamo con il double buffering: il double buffering è una tecnica usata
+per evitare che nel disegnare roba una cosa venga disegnata prima di
+un'altra. Ad esempio nel metodo paint(Graphics g) ci sono diverse istruzioni
+che possono usare a fondo il processore e impiegare del tempo non
+trascurabile per essere eseguite, poichè quando si disegna qualcosa nel
+contesto grafico g questo qualocosa viene immediatamente messo nel buffer
+della memoria grafica, letto immediatamente e inserito nello schermo, le
+cose disegnate all'inizio potrebbero apparire prima delle cose disegnate
+alla fine, e questo provoca un fastidio da parte di chi vede l'applicazione
+grafica. Per evitare ciò si deve inserire tutto quello che si deve disegnare
+sulla memoria grafica (cioè g nel nostro caso) contemporaneamete (o meglio
+in un tempo trascurabile, visto che con un solo processore nulla avviene
+contemporaneamete). Per fare ciò c'è bisogno di un altro contesto grafico
+che non modifica le immagini nello schermo dove disegnare tutte le cose in
+modo da non far vedere niente sullo schermo fino a quando tutto non sarà
+disegnato e poi "svuotare" questo contesto grafico su quello che realmente
+va a modificare le immagini dello schermo.
+
+Io ho usato questi oggetti:
+Image offscreenImage;            //l'immagine del contesto grafico
+offscreenGraphics
+Graphics offscreenGraphics;   //il contesto grafico fuori schermo dove
+adremo a disegnare tutto
+Image back;                           //l'immagine di sfondo
+
+Nel costruttore di Table c'è l'istruzione offscreenGraphics =
+offscreenImage.getGraphics() che lega ll'immagine offscreenImage con il
+contesto grafico offscreenGraphics.
+Ogni volta noi andiamo a disegnare su offscreenGraphics l'immagine
+offscreenImage si modifica, dopo aver disegnato lo sfondo back in
+offscreenGraphics e aver fatto tutti i disegni di quadratini e pezzi che
+vogliamo (magari in un'altra procedura, che ho chiamato offPaint(), cioè
+disegno fuori dallo schermo) allora l'immagine offscreenImage è pronta per
+essere "svuotata" in g, in questo modo: g.drawImage(offscreenImage,0,0,
+this), cioè disegna l'immagine offscreenImage in g nelle coordinate 0,0
+(cioè l'angolo in alto a sinistra della canvas), il quarto paramentro non è
+molto importante e indica l'imageObserver del metodo.
+Così abbiamo spiegato anche il double buffering.
+Per quanto riguarda le immagini e la loro estrazione da file (e l'immenso
+costruttore della classe table) diciamo che ho usato due immagini: una per
+lo sfondo e una per i quadratini. Per estrarre un'immagine da un file per
+una applet (per un normale programma non lo sò di preciso, credo si debbano
+usare gli Stream per dati binari) bisogna utilizzare un ogetto di tipo
+MediaTracker che gestisce tutte le operazioni in questo modo:
+
+ tracker = new MediaTracker(this);
+//inizializza l'oggetto MediaTracker
+
+String backgroundName = base.getParameter("backgroundName");   //estrai il
+nome del file dove sta l'immagine dal parametro
+Image iback = null;
+//oggetto dove sarà memorizzata temporaneamente l'immagine da estrarre
+
+iback =  base.getImage(base.getCodeBase(), backgroundName);       //estrae
+l'immagine vera e propria
+tracker.addImage(iback,0);
+//assegna l'immagine al gestore di estrazione delle immagine MediaTracker
+try {tracker.waitForAll();}
+//aspetta che l'immagine sia completamente caricata
+catch (InterruptedException e)
+//acchiappa le possibili eccezioni che ci possono essere
+{System.out.println("MediaTraker error in "+backgroundName+" image:
+"+e.getMessage())}     //e le stampa all'esterno se ci sono
+
+back = base.createImage(dwidth,dheight);
+//assegna all'atributo di classe back un'istanza dell'immagine di dimensioni
+appropriate
+
+Questo è a grandi linee quello che si fa per estrarre un'immagine da un file
+in un'applet. Io poi ho messo dei controlli in modo che se il file non viene
+trovato o manca il parametro con il nome del file o succede qualcos'altro al
+posto dell'immagine estratta dal file all'immagine finale viene assegnata
+come grafica un rettangolo così il gioco può funzionare comunque.
+
+Per quanto riguarda i quadratini io ne ho usati 6 e sono tutti su un file,
+questo perchè per scaricare dei file da internet richiede di instaurare una
+connessione per ogni file e questo impiega tempo che va a sommarsi a quello
+già l'ungo per scaricarsi le classi dell'applet, così usando un solo file
+per i quadratini, e non 6, si risparmia tempo. Però poi c'è da dividere
+l'immagine in questo modo:
+
+//in tmp è messa l'immagine dei quadratini estratta da file con la tecnica
+precedente
+ImageFilter filter;                                 //filtro dell'immagine
+ImageProducer producer;                   //produttore dell'immagine da
+un'altra immagine
+
+filter = new CropImageFilter(0,0,20,20);      //assegna al filtro
+un'immagine tagliata con quelle dimensioni da un'istanza della classe
+CropImageFilter
+producer = new FilteredImageSource(tmp.getSource(), filter);   //assegna al
+produttore prendi l'immagine tmp filtrata con le dimensioni del filtro
+pieces[0] = createImage(producer);       //crea l'immagine dal produttore e
+la mette nel primo elemneto del vettore che conterrà tutti i pezzi
+//... per ogni quadratino cambiando le coordinate
+
+E questo è quanto anche per le immagini. Inolre io ho usato alcune
+istruzioni per dimensionare la applet in modo che possa essere
+ridimensionata a piacimento e le dimensioni dell'area di gioco siano
+comunque proporzionate. Ho anche messo delle routine in modo che i colori
+del gioco siano personalizzabili a piacimento.
+
+I suoni sono la cosa più facile in assoluto da mettere, a patto che tu usi
+suoni con estensione .au , se no c'è da fare qualche conversione (io li ho
+rubati ad un gioco in java di pacman!), la sintassi è:
+AudioClip suono = getAudioClip(getCodeBase(), "nomeSuono.au"); //per
+inizializzarlo
+suono.play(); //per suonarlo
+
+La cosa più bella che ho fatto però è usare il polimorfismo.
+Ogni volta che si cambia gioco il gioco nuovo viene messo in una classe
+Game, gli altri giochi sono ereditati da questa classe Game e fanno
+l'overriding dei metodi pubblic così che tetris.fall() è diverso da
+snake.fall() ma quando si va a fare game.fall() il programma si comporta
+diversamente a seconda del gioco che sta in game. E' tutto!
+
+Dopo questa infinita lettera spero che tu abbia inquadrato un po' meglio il
+problema. Altrimenti ho buttato 3 ore che avrei potuto utilizzare
+profiquamente per bere, fumare, magiare schifezze e guardare tv.
+
+Voglio sapere però da te se per caso frequenti l'univesità, che università
+frequenti e com è. E perchè vuoi imparare java.
+Forse è meglio che io inizi a studiare per gli esami di maturità un giorno
+di questi.
+Alla prossima!!!!!!
+
